@@ -181,8 +181,36 @@
         "summary" : "Scan",
         "tags" : [ "Scanning Resource" ]
       }
+    },
+    "/api/v1/scan/folder" : {
+      "post" : {
+        "summary" : "Scan pre-extracted folder by UUID",
+        "description" : "Scan a folder that was previously extracted. UUID is used as both folder name and WebSocket clientId.",
+        "tags" : [ "Folder Scanning Resource" ],
+        "requestBody" : {
+          "content" : {
+            "application/json" : {
+              "schema" : {
+                "$ref" : "#/components/schemas/FolderScanRequest"
+              }
+            }
+          },
+          "required" : true
+        },
+        "responses" : {
+          "200" : {
+            "description" : "OK"
+          },
+          "400" : {
+            "description" : "Bad Request"
+          }
+        }
+      }
     }
   },
+  "tags" : [ {
+    "name" : "Folder Scanning Resource"
+  } ],
   "components" : {
     "schemas" : {
       "Credentials" : {
@@ -195,6 +223,20 @@
             "type" : "string"
           },
           "pat" : {
+            "type" : "string"
+          }
+        }
+      },
+      "FolderScanRequest" : {
+        "type" : "object",
+        "properties" : {
+          "uuid" : {
+            "type" : "string"
+          },
+          "projectName" : {
+            "type" : "string"
+          },
+          "subfolder" : {
             "type" : "string"
           }
         }
