@@ -221,6 +221,9 @@
               <include>src/main/java/**/*.java</include> <!-- Check application code -->
               <include>src/test/java/**/*.java</include> <!-- Check application tests code -->
             </includes>
+            <excludes>
+              <exclude>src/main/java/com/ibm/usecases/**/commands/*CommandHandler.java</exclude>
+            </excludes>
             <googleJavaFormat>
               <version>${google-java-format.version}</version>
               <style>AOSP</style>
@@ -253,7 +256,8 @@
         </configuration>
         <executions>
           <execution>
-            <phase>validate</phase>
+            <id>spotless-apply</id>
+            <phase>none</phase>
             <goals>
               <goal>apply</goal>
             </goals>

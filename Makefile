@@ -28,7 +28,7 @@ dev-frontend:
 	env CBOMKIT_VERSION=${VERSION} CBOMKIT_VIEWER=false POSTGRESQL_AUTH_USERNAME=cbomkit POSTGRESQL_AUTH_PASSWORD=cbomkit $(ENGINE)-compose --profile dev-frontend up
 # run the prod setup using $(ENGINE) compose
 production:
-	env CBOMKIT_VERSION=${VERSION} CBOMKIT_VIEWER=false POSTGRESQL_AUTH_USERNAME=cbomkit POSTGRESQL_AUTH_PASSWORD=cbomkit $(ENGINE)-compose --profile prod up
+	env CBOMKIT_VERSION=${VERSION} CBOMKIT_VIEWER=false POSTGRESQL_AUTH_USERNAME=postgres POSTGRESQL_AUTH_PASSWORD=password $(ENGINE)-compose --profile prod up
 edge:
 	$(ENGINE) pull ghcr.io/cbomkit/cbomkit:edge
 	$(ENGINE) pull ghcr.io/cbomkit/cbomkit-frontend:edge
