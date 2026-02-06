@@ -52,8 +52,16 @@ public final class Configuration implements IScanConfiguration, IComplianceConfi
                 .getOptionalValue("cbomkit.scanning.java-jar-dir", String.class)
                 .map(relativeDir -> new File(relativeDir).getAbsolutePath())
                 .orElseThrow(
-                        () ->
-                                new IllegalStateException(
-                                        "Could not load jar dependencies for java scanning")); // Error
+                        () -> new IllegalStateException(
+                                "Could not load jar dependencies for java scanning")); // Error
+    }
+
+    @Nonnull
+    @Override
+    public String getBaseScanFolderPath() {
+        return ConfigProvider.getConfig()
+                .getOptionalValue("cbomkit.scan-folder-path", String.class)
+                .orElse(System.getenv().getOrDefault("CBOMKIT_SCAN_FOLDER_PATH",
+                        System.getProperty("user.home") + "/.cbomkit/scans"));
     }
 }

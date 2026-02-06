@@ -1,6 +1,6 @@
 /*
  * CBOMkit
- * Copyright (C) 2024 PQCA
+ * Copyright (C) 2025 PQCA
  *
  * Licensed to the Apache Software Foundation (ASF) under one or more
  * contributor license agreements.  See the NOTICE file distributed with
@@ -17,18 +17,19 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.ibm.infrastructure.scanning;
+package com.ibm.usecases.scanning.commands;
 
+import app.bootstrap.core.cqrs.ICommand;
+import com.ibm.domain.scanning.ScanId;
 import jakarta.annotation.Nonnull;
+import jakarta.annotation.Nullable;
 
-public interface IScanConfiguration {
-
-    @Nonnull
-    String getBaseCloneDirPath();
-
-    @Nonnull
-    String getJavaDependencyJARSPath();
-
-    @Nonnull
-    String getBaseScanFolderPath();
+/**
+ * Command to start scanning a pre-extracted folder by UUID.
+ */
+public record RequestFolderScanCommand(
+    @Nonnull ScanId id,
+    @Nonnull String uuid,
+    @Nonnull String projectName,
+    @Nullable String subfolder) implements ICommand {
 }
