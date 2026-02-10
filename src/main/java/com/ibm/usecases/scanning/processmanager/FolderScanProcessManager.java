@@ -23,7 +23,7 @@ import app.bootstrap.core.cqrs.ICommand;
 import app.bootstrap.core.cqrs.ICommandBus;
 import app.bootstrap.core.cqrs.ProcessManager;
 import app.bootstrap.core.ddd.IRepository;
-import com.ibm.domain.scanning.Language;
+import org.pqca.scanning.Language;
 import com.ibm.domain.scanning.ScanAggregate;
 import com.ibm.domain.scanning.ScanId;
 import com.ibm.usecases.scanning.commands.IndexModulesCommand;
@@ -45,6 +45,7 @@ import java.util.concurrent.TimeUnit;
 import org.pqca.indexing.ProjectModule;
 import org.pqca.indexing.java.JavaIndexService;
 import org.pqca.indexing.python.PythonIndexService;
+import org.pqca.indexing.go.GoIndexService;
 import org.pqca.progress.IProgressDispatcher;
 import org.pqca.progress.ProgressMessage;
 import org.pqca.progress.ProgressMessageType;
@@ -52,6 +53,7 @@ import org.pqca.scanning.CBOM;
 import org.pqca.scanning.ScanResultDTO;
 import org.pqca.scanning.java.JavaScannerService;
 import org.pqca.scanning.python.PythonScannerService;
+import org.pqca.scanning.go.GoScannerService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -169,6 +171,13 @@ public final class FolderScanProcessManager extends ProcessManager<ScanId, ScanA
     final List<ProjectModule> pythonIndex = pythonIndexService.index(subfolderPath);
     this.index.put(Language.PYTHON, pythonIndex);
 
+    // Go indexing
+    sendProgress("INDEXING", 45, "Indexing Go modules...");
+    final GoIndexService goIndexService = new GoIndexService(
+        this.progressDispatcher, projectDirectory);
+    final List<ProjectModule> goIndex = goIndexService.index(subfolderPath);
+    this.index.put(Language.GO, goIndex);
+
     sendProgress("SCANNING", 50, "Starting code scan...");
     this.commandBus.send(new ScanCommand(command.id()));
   }
@@ -221,6 +230,26 @@ public final class FolderScanProcessManager extends ProcessManager<ScanId, ScanA
           consolidatedCBOM.merge(pythonScanResultDTO.cbom());
         } else {
           consolidatedCBOM = pythonScanResultDTO.cbom();
+        }
+      }
+
+      // Go scanning
+      sendProgress("SCANNING", 85, "Scanning Go files...");
+      final GoScannerService goScannerService = new GoScannerService(
+          this.progressDispatcher, projectDirectory);
+      final ScanResultDTO goScanResultDTO = goScannerService.scan(this.index.get(Language.GO));
+      numberOfScannedLines += goScanResultDTO.numberOfScannedLines();
+      numberOfScannedFiles += goScanResultDTO.numberOfScannedFiles();
+      sendProgress("SCANNING", 88, "Go scan complete");
+
+      if (goScanResultDTO.cbom() != null) {
+        goScanResultDTO.cbom().addMetadata(
+            "folder://" + this.projectName, "folder", null, this.subfolder);
+
+        if (consolidatedCBOM != null) {
+          consolidatedCBOM.merge(goScanResultDTO.cbom());
+        } else {
+          consolidatedCBOM = goScanResultDTO.cbom();
         }
       }
 
