@@ -61,8 +61,8 @@ services:
   frontend:
     image: ghcr.io/cbomkit/cbomkit-frontend:${CBOMKIT_VERSION}
     environment:
-      VUE_APP_HTTP_API_BASE: "http://192.168.16.12:8001"
-      VUE_APP_WS_API_BASE: "ws://192.168.16.12:8001"
+      VUE_APP_HTTP_API_BASE: "${CBOMKIT_FRONTEND_HTTP_API_BASE:-http://localhost:8081}"
+      VUE_APP_WS_API_BASE: "${CBOMKIT_FRONTEND_WS_API_BASE:-ws://localhost:8081}"
       VUE_APP_TITLE: "CBOMkit"
       VUE_APP_VIEWER_ONLY: ${CBOMKIT_VIEWER}
     ports:
